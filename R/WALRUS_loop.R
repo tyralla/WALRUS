@@ -44,6 +44,7 @@ WALRUS_loop = function(pars)
   ### INITIAL CONDITIONS 
   ######################
   
+  print("Initial conditions:")
   # Q[1] is necessary for stepsize-check (if dQ too large)
   if(is.null(pars$Q0)==FALSE)
     {
@@ -51,7 +52,8 @@ WALRUS_loop = function(pars)
     }else{
       o$Q[1]  = func_Qobs(output_date[2]) / (output_date[2]-output_date[1]) *3600
     }
-
+  print(c("  Q0", o$hS[1]))
+  
   # hS from first Q measurement and Qh-relation
   if(is.null(pars$hS0)==FALSE)
   {
@@ -61,6 +63,7 @@ WALRUS_loop = function(pars)
       get("func_Q_hS", envir=.WALRUSenv)(x,pars,hSmin=func_hSmin(output_date[1]))-o$Q[1])},
       lower=0, upper=pars$cD)$root 
   }
+print(c("  hS0", o$hS[1]))
   
   
 # dG and hQ    
@@ -93,9 +96,12 @@ WALRUS_loop = function(pars)
                          lower=0, upper=(pars$cD-o$hS[1]))$root
     o$hQ  [1]  = o$Q[1] *(1-pars$Gfrac) *pars$cQ    
   }
+  print(c("  dG0", o$dG[1]))
+  print(c("  hQ0", o$hQ[1]))
 
   # dVeq
   o$dVeq [1]  = get("func_dVeq_dG", envir=.WALRUSenv)(o$dG[1], pars)   
+  print(c("  dVeq0", o$dVeq[1]))
   
   # dV
   if(is.null(pars$dV0)==FALSE)
@@ -104,9 +110,11 @@ WALRUS_loop = function(pars)
   }else{
     o$dV[1]  = o$dVeq[1]
   }
+  print(c("  dV0", o$dV[1]))
 
   # W
   o$W    [1]  = get("func_W_dV", envir=.WALRUSenv)(o$dV[1], pars)
+  print(c("  W0", o$W[1]))
 
   # prepare for-loop
   o_step       = o[1,]
